@@ -277,7 +277,7 @@ jobs:
       - name: Trivy Container Scan - JSON
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:scan
+          image-ref: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:scan
           format: 'json'
           output: 'trivy-image-results.json'
           severity: 'CRITICAL,HIGH'
@@ -288,7 +288,7 @@ jobs:
         if: always()
         uses: aquasecurity/trivy-action@master
         with:
-          image-ref: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:scan
+          image-ref: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}:scan
           format: 'sarif'
           output: 'trivy-image-results.sarif'
           severity: 'CRITICAL,HIGH'
@@ -355,7 +355,7 @@ jobs:
         id: meta
         uses: docker/metadata-action@v5
         with:
-          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          images: ${{ env.REGISTRY }}/${{ steps.image.outputs.name }}
           tags: |
             type=sha,prefix=
             type=raw,value=latest,enable={{is_default_branch}}
@@ -400,7 +400,7 @@ jobs:
           if [[ "${{ needs.docker.result }}" == "success" ]]; then
             echo ""
             echo "  IMAGE PUSHED SUCCESSFULLY"
-            echo "  ghcr.io/${{ github.repository }}:latest"
+            echo "  ghcr.io/${{ steps.image.outputs.name }}:latest"
             echo "=========================================="
           else
             echo ""
